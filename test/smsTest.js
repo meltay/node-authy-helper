@@ -9,8 +9,10 @@ describe('Sms Test', function() {
     it('Create Authy User', async function() {
         var expected = true;
         
-        let createSmsUserResult = await authy.createUser('test@test.com', '532999999', '90');
-        userAuthyId = createSmsUserResult.user.id;
+        let createSmsUserResult = await authy.createUser('test@test.com', '05328881122', '90');
+        if (createSmsUserResult.user) {
+            userAuthyId = createSmsUserResult.user.id;
+        }
         assert.deepEqual(createSmsUserResult.success, expected);
     });
     it('Create Authy Empty Phone', async function() {
