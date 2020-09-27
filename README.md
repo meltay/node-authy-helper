@@ -49,3 +49,6 @@ let status = await authy.checkAuthenticationRequestStatus(uuid);
 console.log(status.approval_request.status); // pending, aproved, expired or denied
 ```
 
+#### Test for Developer
+
+`npm test`
