@@ -1,6 +1,6 @@
 # Authy Verify API Helper For Node.JS
 
-[Officlial Authy documentation](https://www.twilio.com/docs/authy/api "Officlial documentation")
+[Official Authy documentation](https://www.twilio.com/docs/authy/api "Officlial documentation")
 
 ## Installation
 
