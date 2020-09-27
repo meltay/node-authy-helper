@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive --watch --reporter spec && NODE_ENV=test ",
+    "test": "mocha --exit --recursive --reporter spec && export NODE_ENV=test",
     "run": "node index.js"
   },
   "author": "Meltay Berk Işıltı",
