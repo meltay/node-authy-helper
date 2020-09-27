@@ -1,0 +1,25 @@
+{
+  "name": "authy-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive --watch --reporter spec && NODE_ENV=test ",
+    "run": "node index.js"
+  },
+  "author": "Meltay Berk Işıltı",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "querystring": "^0.2.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1",
+    "sinon": "^9.0.2"
+  },
+  "repository": {
+    "tpye": "git",
+    "url": "https://github.com/meltay/node-authy-helper.git"
+  }
+}
