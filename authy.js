@@ -31,8 +31,8 @@ function authy (apiKey) {
                 return err.response.data;
             }
         },
-        sendSmsVerifyCode: async function (userAuthyId) {
-            let url = BASE_URL + '/protected/json/sms/' + userAuthyId;
+        sendSmsVerifyCode: async function (userAuthyId, force = false) {
+            let url = BASE_URL + '/protected/json/sms/' + userAuthyId + '?force=' + force;
             try {
                 let response = await axios.get(url);
                 return response.data;
@@ -76,6 +76,19 @@ function authy (apiKey) {
             let url = BASE_URL + '/onetouch/json/approval_requests/' + transactionId;
             try {
                 let response = await axios.get(url);
+                return response.data;
+            } catch (err) {
+                return err.response.data;
+            }
+        },
+        deleteUser: async function (userAuthyId, user_ip = '') {
+            let url = BASE_URL + '/protected/json/users/' + userAuthyId + '/remove ';
+            try {
+                let response = await axios.post(url,
+                    { 
+                        user_ip: user_ip
+                    }
+                );
                 return response.data;
             } catch (err) {
                 return err.response.data;

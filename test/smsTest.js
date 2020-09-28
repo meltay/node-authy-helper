@@ -63,4 +63,10 @@ describe('Sms Test', function() {
         let verifySmsCodeResult = await authy.verifySmsCode(userAuthyId);
         assert.deepEqual(verifySmsCodeResult.success, expected);
     });
+    it('Delete Authy User', async function() {
+        var expected = true;
+        
+        let deleteUserResult = await authy.deleteUser(userAuthyId);
+        assert.deepEqual(deleteUserResult.success, expected);
+    });
 });
