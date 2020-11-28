@@ -1,6 +1,5 @@
 var config = require('./config');
 const axios = require('axios').default;
-const qs = require('querystring');
 
 var BASE_URL;
 
@@ -18,11 +17,13 @@ function authy (apiKey) {
             let url = BASE_URL + '/protected/json/users/new';
             try {
                 let response = await axios.post(url,
-                    qs.stringify({
+                    null,
+                    { params : {
                         'user[email]': email,
                         'user[cellphone]': phone,
                         'user[country_code]': countryCode
-                    }), {
+                    }
+                    }, {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
                 );
@@ -89,6 +90,24 @@ function authy (apiKey) {
                         user_ip: user_ip
                     }
                 );
+                return response.data;
+            } catch (err) {
+                return err.response.data;
+            }
+        },
+        getAppDetails: async function () {
+            let url = BASE_URL + '/protected/json/app/details'
+            try {
+                let response = await axios.get(url);
+                return response.data;
+            } catch (err) {
+                return err.response.data;
+            }
+        },
+        getUserStatus: async function (userAuthyId) {
+            let url = BASE_URL + '/protected/json/users/' + userAuthyId + '/status'
+            try {
+                let response = await axios.get(url);
                 return response.data;
             } catch (err) {
                 return err.response.data;

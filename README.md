@@ -110,6 +110,23 @@ console.log(status.approval_request.status); // pending, aproved, expired or den
 
 ```
 
+#### Get App Details
+
+```javascript
+
+let appDetails = await authy.getAppDetails();
+console.log(appDetails);
+
+```
+
+#### Get User Status
+
+```javascript
+
+let userStatus = await authy.getUserStatus(userAuthyId);
+console.log(userStatus);
+
+```
   
 
 #### Test for Developer
