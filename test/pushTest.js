@@ -5,7 +5,7 @@ var authy = require('../index')('1mz1nMrzJvrYpVezxB66t1n7Qvwflop0');
 var userAuthyId = '295908957';
 var uuid;
 
-describe('Push Test', function() {
+xdescribe('Push Test', function() {
     it('Send Push Request', async function() {
         var expected = true;
         

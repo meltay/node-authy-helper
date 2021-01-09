@@ -1,17 +1,14 @@
 {
   "name": "authy-helper",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --exit --recursive --reporter spec && export NODE_ENV=test",
+    "test": "mocha --timeout 10000 --exit --recursive --reporter spec && export NODE_ENV=test",
     "run": "node index.js"
   },
   "author": "Meltay Berk Işıltı",
   "license": "ISC",
-  "dependencies": {
-    "axios": "^0.20.0"
-  },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^8.0.1",

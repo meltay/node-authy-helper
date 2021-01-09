@@ -1,7 +1,9 @@
 var config = require('./config');
-const axios = require('axios').default;
 
-var BASE_URL;
+const https = require('https');
+var querystring = require('querystring');
+
+var BASE_URL = config.BASE_URL;
 
 if (process.env.NODE_ENV === 'test') {
     BASE_URL = config.TEST_BASE_URL
@@ -9,113 +11,157 @@ if (process.env.NODE_ENV === 'test') {
     BASE_URL = config.BASE_URL;
 }
 
-function authy (apiKey) {
-    axios.defaults.headers.common['X-Authy-API-Key'] = apiKey;
+var BASE_URL_GET = 'https://' + BASE_URL;
+var globalApiKey = null;
+
+function authy(apiKey) {
+    globalApiKey = apiKey;
+
+    var globalGetOptions = {
+        headers: {
+            'X-Authy-API-Key': globalApiKey,
+        }
+    };
 
     return {
         createUser: async function (email, phone, countryCode) {
-            let url = BASE_URL + '/protected/json/users/new';
-            try {
-                let response = await axios.post(url,
-                    null,
-                    { params : {
-                        'user[email]': email,
-                        'user[cellphone]': phone,
-                        'user[country_code]': countryCode
-                    }
-                    }, {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                );
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            let postOptions = {
+                hostname: BASE_URL,
+                path: '/protected/json/users/new',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Authy-API-Key': globalApiKey,
+                }
+            };
+            let postData = querystring.stringify({
+                'user[email]': email,
+                'user[cellphone]': phone,
+                'user[country_code]': countryCode
+            });
+            return postRequest(postOptions, postData);
         },
         sendSmsVerifyCode: async function (userAuthyId, force = false) {
-            let url = BASE_URL + '/protected/json/sms/' + userAuthyId + '?force=' + force;
-            try {
-                let response = await axios.get(url);
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            let url = BASE_URL_GET + '/protected/json/sms/' + userAuthyId + '?force=' + force;
+            return getRequest(url);
         },
         verifySmsCode: async function (userAuthyId, code) {
-            let url = BASE_URL + '/protected/json/verify/' + code + '/' + userAuthyId;
-            try {
-                let response = await axios.get(url);
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            var result = {};
+            let url = BASE_URL_GET + '/protected/json/verify/' + code + '/' + userAuthyId;
+            return new Promise((resolve, reject) => {
+                https.get(url, globalGetOptions, res => {
+                    let response = ""
+                    res.on("data", d => {
+                        response += d
+                    });
+                    res.on("end", () => {
+                        result = JSON.parse(response);
+                        resolve(result);
+                    });
+                    res.on("error", (error) => {
+                        result.success = false;
+                        result.error = error;
+                        reject(result);
+                    });
+                });
+            });
         },
-        sendPushAuthenticationRequest: async function(userAuthyId, pushMessage, pushDetails, hiddenDetails, logos = null, expireSecond) {
-            let payload = {
+        sendPushAuthenticationRequest: async function (userAuthyId, pushMessage, pushDetails, hiddenDetails, logos = null, expireSecond) {
+            let postOptions = {
+                hostname: BASE_URL,
+                path: '/onetouch/json/users/' + userAuthyId + '/approval_requests',
+                method: 'POST',
+                headers: {
+                    'X-Authy-API-Key': globalApiKey,
+                }
+            };
+            let postData = {
                 message: pushMessage,
                 details: pushDetails || {},
                 hidden_details: hiddenDetails || {}
-            }
+            };
 
             if (logos) {
-                payload.logos = logos;
+                postData.logos = logos;
             }
 
             if (expireSecond) {
-                payload.seconds_to_expire = expireSecond;
+                postData.seconds_to_expire = expireSecond;
             }
-
-            let url = BASE_URL + '/onetouch/json/users/' + userAuthyId + '/approval_requests';
-            try {
-                let response = await axios.post(url, payload);
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            postData =  querystring.stringify(postData);
+            return postRequest(postOptions, postData);
         },
         checkAuthenticationRequestStatus: async function (transactionId) {
-            let url = BASE_URL + '/onetouch/json/approval_requests/' + transactionId;
-            try {
-                let response = await axios.get(url);
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            let url = BASE_URL_GET + '/onetouch/json/approval_requests/' + transactionId;
+            return getRequest(url);
         },
         deleteUser: async function (userAuthyId, user_ip = '') {
-            let url = BASE_URL + '/protected/json/users/' + userAuthyId + '/remove ';
-            try {
-                let response = await axios.post(url,
-                    { 
-                        user_ip: user_ip
-                    }
-                );
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            let postOptions = {
+                hostname: BASE_URL,
+                path: '/protected/json/users/' + userAuthyId + '/remove',
+                method: 'POST',
+                headers: {
+                    'X-Authy-API-Key': globalApiKey,
+                }
+            };
+            let postData = querystring.stringify({
+                user_ip: user_ip
+            });
+            return postRequest(postOptions, postData);
         },
         getAppDetails: async function () {
-            let url = BASE_URL + '/protected/json/app/details'
-            try {
-                let response = await axios.get(url);
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            let url = BASE_URL_GET + '/protected/json/app/details'
+            return getRequest(url);
         },
         getUserStatus: async function (userAuthyId) {
-            let url = BASE_URL + '/protected/json/users/' + userAuthyId + '/status'
-            try {
-                let response = await axios.get(url);
-                return response.data;
-            } catch (err) {
-                return err.response.data;
-            }
+            let url = BASE_URL_GET + '/protected/json/users/' + userAuthyId + '/status'
+            return getRequest(url);
         }
+    }
+
+    function postRequest (options, data) {
+        let result = {};
+        return new Promise((resolve, reject) => {
+            https.request(options, res => {
+                let response = ""
+                res.on("data", d => {
+                    response += d
+                })
+                res.on("end", () => {
+                    result = JSON.parse(response);
+                    resolve(result);
+                })
+                res.on("error", (error) => {
+                    result.success = false;
+                    result.error = error;
+                    reject(result);
+                })
+            }).end(data);
+        });
+    }
+    
+    function getRequest (url) {
+        let result = {};
+        return new Promise((resolve, reject) => {
+            https.get(url, globalGetOptions, res => {
+                let response = ""
+                res.on("data", d => {
+                    response += d
+                });
+                res.on("end", () => {
+                    result = JSON.parse(response);
+                    resolve(result);
+                });
+                res.on("error", (error) => {
+                    result.success = false;
+                    result.error = error;
+                    reject(result);
+                });
+            });
+        });
     }
 }
 
-module.exports = function init (apiKey) {
+module.exports = function init(apiKey) {
     return authy(apiKey);
 }

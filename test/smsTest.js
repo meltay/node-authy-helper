@@ -1,8 +1,8 @@
 const chai = require('chai');
 const assert = chai.assert;
-var authy = require('../index')('1mz1nMrzJvrYpVezxB66t1n7Qvwflop0');
+var authy = require('../index')('5yPJPCp4HglyyBFWVSnvcaiWS0tDZf44');
 
-var userAuthyId;
+var userAuthyId = '334214703';
 var wrongVerifyCode = 222333444;
 
 describe('Sms Test', function() {
